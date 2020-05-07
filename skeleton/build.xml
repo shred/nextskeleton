@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ nextskeleton - An assembler skeleton for the ZX Spectrum Next
+
+ Copyright (C) 2020 Richard "Shred" Körber
+   https://github.com/shred/nextskeleton
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<project name="{{project}}" default="package" basedir=".">
+
+    <!-- Global Properties -->
+    <property name="distributionurl" value="{{disturl}}"/> 
+    <property name="src" location="src"/>
+    <property name="tools" location="tools"/>
+    <property name="dist" location="dist"/>
+    <property name="resources" location="resources"/>
+    <property name="package" location="${dist}/package"/>
+    <property name="image" location=".image"/>
+    <property name="sdcard" location="${dist}/image.mmc"/>
+    <property name="sdsize" value="{{sdsize}}"/>
+    <property name="baseasmfile" value="${ant.project.name}.asm"/>
+    <property name="assembler" value="sjasmplus"/>
+    <property name="emulator" value="cspect"/>
+
+    <!-- Download the distribution image -->
+    <target name="-check-setup">
+        <available file="${image}" property="distribution.isPresent"/>
+    </target>
+    <target name="setup" depends="-check-setup" unless="distribution.isPresent" description="downloading distribution image">
+        <mkdir dir="${image}"/>
+        <get src="${distributionurl}" dest="${image}/distribution.zip"/>
+        <unzip src="${image}/distribution.zip" dest="${image}"/>
+        <delete file="${image}/distribution.zip"/>
+    </target>
+
+    <!-- Initialize the project -->
+    <target name="init" depends="setup" description="initialize project">
+        <tstamp/>
+        <mkdir dir="${dist}"/>
+        <mkdir dir="${dist}/inc"/>
+        <mkdir dir="${dist}/resources"/>
+    </target>
+
+    <!-- Prepare the build -->
+    <target name="prepare" depends="init" description="prepare build">
+    </target>
+
+    <!-- Assemble main source -->
+    <target name="build" depends="init,prepare" description="build project">
+        <exec executable="${assembler}" failonerror="true" dir="${src}">
+            <arg value="--inc"/><arg path="${dist}/inc"/>
+            <arg value="${baseasmfile}"/>
+        </exec>
+    </target>
+
+    <!-- Package the project -->
+    <target name="package" depends="init,build" description="package project">
+        <!-- delete any existing package directory -->
+        <delete dir="${package}"/>
+        <mkdir dir="${package}"/>
+        <!-- copy all static and generated resources to the package -->
+        <copy todir="${package}" failonerror="false" preservelastmodified="true">
+            <fileset dir="${resources}"/>
+            <fileset dir="${dist}/resources"/>
+        </copy>
+        <!-- copy all .nex and .tap files to the package -->
+        <copy todir="${package}">
+            <fileset dir="${dist}">
+                <include name="*.nex"/>
+                <include name="*.tap"/>
+            </fileset> 
+        </copy>
+    </target>
+
+    <!-- Create image file -->
+    <target name="-check-sdcard">
+        <available file="${sdcard}" property="sdcard.isPresent"/>
+    </target>
+    <target name="sdcard" depends="init,-check-sdcard" unless="sdcard.isPresent" description="generating the MMC image">
+        <exec executable="${tools}/mmc-build.sh">
+            <arg file="${image}"/>
+            <arg file="${sdcard}"/>
+            <arg value="${sdsize}"/>
+        </exec>
+    </target>
+
+    <!-- Run -->
+    <target name="-prepare-emulator" depends="sdcard,package">
+        <!-- required by cspect -->
+        <copy file="${image}/machines/next/enNextZX.rom" todir="${dist}"/>
+        <copy file="${image}/machines/next/enNxtmmc.rom" todir="${dist}"/>
+        <copy file="${image}/machines/next/enNextMf.rom" todir="${dist}"/>
+        <!-- create an autoexec.bas file -->
+        <exec executable="${tools}/makeautoexec.py">
+            <arg value="${ant.project.name}/${ant.project.name}.nex"/>
+            <arg file="${dist}/autoexec.bas"/>
+        </exec>
+        <!-- prepare the mmc image -->
+        <exec executable="${tools}/mmc-dist.sh">
+            <arg value="${ant.project.name}"/>
+            <arg file="${package}"/>
+            <arg file="${dist}/autoexec.bas"/>
+            <arg file="${sdcard}"/>
+        </exec>
+        <!-- make sure a map file is present, even if empty -->
+        <touch file="${dist}/${ant.project.name}.map"/>
+    </target>
+    <target name="run" depends="-prepare-emulator" description="run in emulator">
+        <exec executable="${emulator}">
+            <arg value="-tv"/>
+            <arg value="-w3"/>
+            <arg value="-zxnext"/>
+            <arg value="-nextrom"/>
+            <arg value="-map=${dist}/${ant.project.name}.map"/>
+            <arg value="-mmc=${sdcard}"/>
+        </exec>
+    </target>
+    <target name="debug" depends="-prepare-emulator" description="debug in emulator">
+        <exec executable="${emulator}">
+            <arg value="-tv"/>
+            <arg value="-w3"/>
+            <arg value="-zxnext"/>
+            <arg value="-nextrom"/>
+            <arg value="-emu"/>     <!-- enable emulator bit in hardware register -->
+            <arg value="-exit"/>    <!-- enable EXIT opcode -->
+            <arg value="-brk"/>     <!-- enable BREAK opcode -->
+            <arg value="-map=${dist}/${ant.project.name}.map"/>
+            <arg value="-mmc=${sdcard}"/>
+        </exec>
+    </target>
+
+    <!-- Build all release files -->
+    <target name="release" depends="package" description="build a release">
+        <zip destfile="${dist}/${ant.project.name}.zip" basedir="${package}"/>
+    </target>
+
+    <!-- Clean up (but keep the downloaded distribution) -->
+    <target name="clean" description="clean up">
+        <delete dir="${dist}"/>
+    </target>
+
+    <!-- Clean up (remove all generated files and directories) -->
+    <target name="purge" depends="clean" description="purge all files">
+        <delete dir="${image}"/>
+    </target>
+
+</project>

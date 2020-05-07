@@ -1,0 +1,18 @@
+site_name: The Next Skeleton
+site_author: Richard Körber
+site_url: https://shredzone.org/docs/nextskeleton/index.html
+theme:
+    name: material
+    font: false
+    icon:
+        logo: 'material/skull'
+    palette:
+        primary: 'red'
+        accent: 'red'
+nav:
+  - 'Installation': 'index.md'
+  - 'Quick Start': 'start.md'
+  - 'New Projects': 'nxtsetup.md'
+  - 'About ant': 'ant.md'
+  - 'Best Practise': 'practise.md'
+  - 'Releasing': 'release.md'
