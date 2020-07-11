@@ -42,7 +42,7 @@ parser.add_argument('-s', '--size',
 parser.add_argument('-u', '--url',
             dest='url',
             metavar='URL',
-            default='http://www.zxspectrumnext.online/sn-lite-v1.3.zip',
+            default='http://www.zxspectrumnext.online/sn-lite-v.1.3.2.zip',
             help='URL of the ZX Spectrum Next distribution ZIP file to be used')
 parser.add_argument('-d', '--dir',
             dest='dir',
