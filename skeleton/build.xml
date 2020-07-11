@@ -59,9 +59,11 @@
 
     <!-- Assemble main source -->
     <target name="build" depends="init,prepare" description="build project">
-        <exec executable="${assembler}" failonerror="true" dir="${src}">
+        <exec executable="${assembler}" failonerror="true">
+            <arg value="--inc"/><arg path="${src}"/>
             <arg value="--inc"/><arg path="${dist}/inc"/>
-            <arg value="${baseasmfile}"/>
+            <arg value="--outprefix=${dist}/"/>
+            <arg value="${src}/${baseasmfile}"/>
         </exec>
     </target>
 

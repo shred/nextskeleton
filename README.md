@@ -14,7 +14,7 @@ It is targeted for Linux systems, but might also work on MacOS and Windows with 
 
 ## Requirements
 
-The Next Skeleton requires these tools to be installed on your system: [`ant`](https://ant.apache.org/), `curl`, `mono`, `mtools`, `python3`, [sjasmplus](https://github.com/z00m128/sjasmplus), and [#CSpect](http://dailly.blogspot.com/).
+The Next Skeleton requires these tools to be installed on your system: [`ant`](https://ant.apache.org/), `curl`, `mono`, `mtools`, `python3`, [sjasmplus](https://github.com/z00m128/sjasmplus) v1.15.0 or higher, and [#CSpect](http://dailly.blogspot.com/).
 
 Please read the documentation about how to set up your system.
 

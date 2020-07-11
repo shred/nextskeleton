@@ -33,11 +33,11 @@ prtmes:		ld	a, (hl)			; load a character
 message		byte	"Hello World!", 255
 
 	; --- Create the main .nex file ---
-		SAVENEX OPEN "../dist/{{project}}.nex", start, $FF40
+		SAVENEX OPEN "{{project}}.nex", start, $FF40
 		SAVENEX CORE 3, 0, 0
 		SAVENEX CFG 7, 0, 1, 0
 		SAVENEX AUTO
 		SAVENEX CLOSE
 
 	; -- Create a map file for debugging ---
-		CSPECTMAP "../dist/{{project}}.map"
+		CSPECTMAP "{{project}}.map"
