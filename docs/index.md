@@ -18,7 +18,7 @@ The following third-party tools need to be installed too. There are probably no 
 
 * [sjasmplus](https://github.com/z00m128/sjasmplus) for assembling the Z80N sources. Build it with `make`, then copy the `sjasmplus` binary somewhere in your `PATH` (e.g. `/usr/local/bin`). v1.15.0 or higher is required.
 
-* [#CSpect](http://dailly.blogspot.com/) is the ZX Spectrum Next emulator. It comes as a precompiled .net binary that can be run with `mono`. Just unpack the latest version somewhere in your system (e.g. in your home directory or in `/opt/cspect`).
+* [#CSpect](http://www.cspect.org/) is the ZX Spectrum Next emulator. It comes as a precompiled .net binary that can be run with `mono`. Just unpack the latest version somewhere in your system (e.g. in your home directory or in `/opt/cspect`).
 
 Now add a small bash script called `cspect` that is located in your `PATH` and looks something like this:
 
