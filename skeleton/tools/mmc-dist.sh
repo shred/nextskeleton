@@ -3,7 +3,7 @@
 # nextskeleton - An assembler skeleton for the ZX Spectrum Next
 #
 # Copyright (C) 2020 Richard "Shred" Körber
-#   https://github.com/shred/nextskeleton
+#   https://codeberg.org/shred/nextskeleton
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
